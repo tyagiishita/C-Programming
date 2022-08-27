@@ -1,0 +1,127 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+int lexicographic_sort(const char* a, const char* b) {
+    if (strcmp(a, b) > 0) {
+        return 1;
+    }
+    return 0;
+}
+
+int lexicographic_sort_reverse(const char* a, const char* b) {
+    if (strcmp(a, b) < 0) {
+        return 1;
+    }
+    return 0;
+}
+
+int sort_by_number_of_distinct_characters(const char* a, const char* b) {
+    char *temp1 = malloc(sizeof(char) * (strlen(a) + 1));
+    char *temp2 = malloc(sizeof(char) * (strlen(b) + 1));
+    strcpy(temp1, a);
+    strcpy(temp2, b);
+    int counter_1 = 0, counter_2 = 0;
+    for (int i = 0; i < strlen(a); i++) {
+        for (int j = i + 1; j < strlen(a); j++) {
+            if (a[i] == a[j]) {
+                temp1[j] = '0';
+            }
+        }
+    }
+    
+    for (int i = 0; i < strlen(temp1); i++) {
+        if (temp1[i] != '0') {
+            counter_1++;
+        }
+    }
+    
+    for (int i = 0; i < strlen(b); i++) {
+        for (int j = i + 1; j < strlen(b); j++) {
+            if (b[i] == b[j]) {
+                temp2[j] = '0';
+            }
+        }
+    }
+    
+    for (int i = 0; i < strlen(temp2); i++) {
+        if (temp2[i] != '0') {
+            counter_2++;
+        }
+    }
+    if (counter_1 > counter_2) {
+        return 1;
+    }
+    else if (counter_1 == counter_2 && strcmp(a, b) > 0) {
+        return 1;
+    }
+        
+        free(temp1);
+        free(temp2);
+        
+    return 0;
+}
+
+int sort_by_length(const char* a, const char* b) {
+    if (strlen(a) > strlen(b)) {
+        return 1;
+    }
+    
+    else if (strlen(a) == strlen(b) && strcmp(a, b) > 0) {
+        return 1;
+    }
+    
+    return 0;
+}
+
+void string_sort(char** arr,const int len,int (*cmp_func)(const char* a, const char* b)){
+    for (int i = 0; i < len - 1; i++) {
+        for (int j = 0; j < len - i - 1; j++) {
+            int process = cmp_func(arr[j], arr[j + 1]);
+            if (process == 1) {
+                char *temp = malloc(sizeof(char) * (strlen(arr[j]) + 1));
+                strcpy(temp, arr[j]);
+                arr[j] = realloc(arr[j], strlen(arr[j + 1]) + 1);
+                strcpy(arr[j], arr[j + 1]);
+                arr[j + 1] = realloc(arr[j + 1], strlen(temp) + 1);
+                strcpy(arr[j + 1], temp);
+                free(temp);
+            }
+        }
+    }
+}
+
+
+int main() 
+{
+    int n;
+    scanf("%d", &n);
+  
+    char** arr;
+	arr = (char**)malloc(n * sizeof(char*));
+  
+    for(int i = 0; i < n; i++){
+        *(arr + i) = malloc(1024 * sizeof(char));
+        scanf("%s", *(arr + i));
+        *(arr + i) = realloc(*(arr + i), strlen(*(arr + i)) + 1);
+    }
+  
+    string_sort(arr, n, lexicographic_sort);
+    for(int i = 0; i < n; i++)
+        printf("%s\n", arr[i]);
+    printf("\n");
+
+    string_sort(arr, n, lexicographic_sort_reverse);
+    for(int i = 0; i < n; i++)
+        printf("%s\n", arr[i]); 
+    printf("\n");
+
+    string_sort(arr, n, sort_by_length);
+    for(int i = 0; i < n; i++)
+        printf("%s\n", arr[i]);    
+    printf("\n");
+
+    string_sort(arr, n, sort_by_number_of_distinct_characters);
+    for(int i = 0; i < n; i++)
+        printf("%s\n", arr[i]); 
+    printf("\n");
+}
